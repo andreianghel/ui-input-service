@@ -2,18 +2,18 @@ package ro.andreianghel.uiinputservice.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ro.andreianghel.uiinputservice.MessageProducerService;
+import ro.andreianghel.uiinputservice.messaging.service.MessageSenderService;
 
 @RestController
 public class UIController {
 
-    private MessageProducerService messageProducerService;
+    private MessageSenderService messageSenderService;
 
     private int counter;
 
     @Autowired
-    public UIController(MessageProducerService messageProducerService) {
-        this.messageProducerService = messageProducerService;
+    public UIController(MessageSenderService messageSenderService) {
+        this.messageSenderService = messageSenderService;
         this.counter = 0;
     }
 
@@ -23,12 +23,15 @@ public class UIController {
 
         // FIXME push a message to a kafka consumer
 
-        messageProducerService.sendAddMessage("demo message: "+(counter++));
-
-
+        messageSenderService.sendAddMessage("demo message: " + (counter++));
 
 
         return "hi";
+    }
+
+    @GetMapping("demoGetAll")
+    void demoGetAll() {
+        messageSenderService.sendGetAllMessage();
     }
 
 

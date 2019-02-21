@@ -1,11 +1,11 @@
-package ro.andreianghel.uiinputservice;
+package ro.andreianghel.uiinputservice.messaging.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MessageProducerService {
+public class MessageSenderService {
 
     public static final String TOPIC_ADD = "add_entry";
     public static final String TOPIC_GET_ALL = "get_all_entries";
@@ -13,7 +13,7 @@ public class MessageProducerService {
     private KafkaTemplate<String, String> kafkaTemplate;
 
     @Autowired
-    public MessageProducerService(KafkaTemplate<String, String> kafkaTemplate) {
+    public MessageSenderService(KafkaTemplate<String, String> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
@@ -26,7 +26,7 @@ public class MessageProducerService {
     }
 
     public void sendMessage(String topic, String message) {
-       // System.out.println(String.format("#### -> Producing message -> %s", message));
+        // System.out.println(String.format("#### -> Producing message -> %s", message));
         this.kafkaTemplate.send(topic, message);
     }
 
