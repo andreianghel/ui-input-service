@@ -1,8 +1,10 @@
 package ro.andreianghel.uiinputservice.messaging.config;
 
+import kafka.zk.AdminZkClient;
+import kafka.zk.KafkaZkClient;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.serialization.IntegerSerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.apache.kafka.common.utils.Time;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,11 +38,32 @@ public class KafkaConfig {
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
 
+        props.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "snappy");
+
         return props;
     }
 
     @Bean
     public KafkaTemplate<String, String> kafkaTemplate() {
-        return new KafkaTemplate<String, String>(producerFactory());
+        return new KafkaTemplate<>(producerFactory());
     }
+
+    @Bean
+    public AdminZkClient createZookeeperClient() {
+        String zookeeperHost = "127.0.0.1:2181";
+        Boolean isSucre = false;
+        int sessionTimeoutMs = 200000;
+        int connectionTimeoutMs = 15000;
+        int maxInFlightRequests = 10;
+
+        Time time = Time.SYSTEM;
+        String metricGroup = "myGroup";
+        String metricType = "myType";
+
+        KafkaZkClient zkClient = KafkaZkClient.apply(zookeeperHost, isSucre, sessionTimeoutMs,
+                connectionTimeoutMs, maxInFlightRequests, time, metricGroup, metricType);
+        return new AdminZkClient(zkClient);
+    }
+
+
 }

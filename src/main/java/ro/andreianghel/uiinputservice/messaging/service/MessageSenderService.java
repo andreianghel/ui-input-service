@@ -1,5 +1,6 @@
 package ro.andreianghel.uiinputservice.messaging.service;
 
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -12,9 +13,14 @@ public class MessageSenderService {
 
     private KafkaTemplate<String, String> kafkaTemplate;
 
+
+    private Gson gson;
+
     @Autowired
-    public MessageSenderService(KafkaTemplate<String, String> kafkaTemplate) {
+    public MessageSenderService(KafkaTemplate<String, String> kafkaTemplate,
+                                Gson gson) {
         this.kafkaTemplate = kafkaTemplate;
+        this.gson = gson;
     }
 
     public void sendAddMessage(String message) {
@@ -26,8 +32,9 @@ public class MessageSenderService {
     }
 
     public void sendMessage(String topic, String message) {
-        // System.out.println(String.format("#### -> Producing message -> %s", message));
-        this.kafkaTemplate.send(topic, message);
+
+        // convert to json every time
+        this.kafkaTemplate.send(topic, gson.toJson(message));
     }
 
 }
